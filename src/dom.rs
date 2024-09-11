@@ -1,27 +1,30 @@
-type AttrMap = HashMap<String, String>;
+use std::collections::HashMap;
 
+pub type AttrMap = HashMap<String, String>;
 
-struct Node {
+pub struct Node {
     // data common to all nodes
-    children: Vec<Node>,
+    pub children: Vec<Node>,
 
     // data specific to each node type
-    node_type: NodeType,
+    pub node_type: NodeType,
 }
 
-enum NodeType {
+pub enum NodeType {
     Text(String),
-    Element(ElementData)
+    Element(ElementData),
 }
 
-struct ElementData {
-    tag_name: String,
-    attributes: AttrMap,
+pub struct ElementData {
+    pub tag_name: String,
+    pub attributes: AttrMap,
 }
 
-
-fn text(data: String) -> Node {
-    Node { children: Vec::new(), node_type: NodeType::Text(data) }
+pub fn text(data: String) -> Node {
+    Node {
+        children: Vec::new(),
+        node_type: NodeType::Text(data),
+    }
 }
 
 pub fn elem(tag_name: String, attrs: AttrMap, children: Vec<Node>) -> Node {
@@ -29,7 +32,7 @@ pub fn elem(tag_name: String, attrs: AttrMap, children: Vec<Node>) -> Node {
         children,
         node_type: NodeType::Element(ElementData {
             tag_name,
-            attrs,
+            attributes: attrs,
         }),
     }
 }
