@@ -7,10 +7,35 @@ use std::collections::HashMap;
 type PropertyMap = HashMap<String, Value>;
 
 // A node with associated style data.
-struct StyledNode<'a> {
-    node: &'a Node,
-    specified_values: PropertyMap,
-    children: Vec<StyledNode<'a>>,
+pub struct StyledNode<'a> {
+    pub node: &'a Node,
+    pub specified_values: PropertyMap,
+    pub children: Vec<StyledNode<'a>>,
+}
+
+pub enum Display {
+    Inline,
+    Block,
+    None,
+}
+
+impl<'a> StyledNode<'a> {
+    // Return the specified value of a property if it exists, otherwise `None`.
+    pub fn value(&self, name: &str) -> Option<Value> {
+        self.specified_values.get(name).cloned()
+    }
+
+    // The value of the `display` property (defaults to inline).
+    pub fn display(&self) -> Display {
+        match self.value("display") {
+            Some(Value::Keyword(s)) => match s.as_str() {
+                "block" => Display::Block,
+                "none" => Display::None,
+                _ => Display::Inline,
+            },
+            _ => Display::Inline,
+        }
+    }
 }
 
 fn matches(elem: &ElementData, selector: &Selector) -> bool {
