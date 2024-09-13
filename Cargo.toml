@@ -3,4 +3,10 @@ name = "robinson-toy-browser-engine-for-learning-rust"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "robinson"
+path = "src/main.rs"
+
 [dependencies]
+getopts = "0.2.21"
+image = "0.14"

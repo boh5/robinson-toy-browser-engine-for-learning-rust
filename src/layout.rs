@@ -4,30 +4,30 @@ use crate::layout::BoxType::{AnonymousBlock, BlockNode, InlineNode};
 use crate::style::{Display, StyledNode};
 
 #[derive(Clone, Copy, Default, Debug)]
-struct Dimensions {
+pub struct Dimensions {
     // Position of the content area relative t the document origin:
-    content: Rect,
+    pub content: Rect,
 
     // Surrounding edges:
-    padding: EdgeSizes,
-    border: EdgeSizes,
-    margin: EdgeSizes,
+    pub padding: EdgeSizes,
+    pub border: EdgeSizes,
+    pub margin: EdgeSizes,
 }
 
 #[derive(Clone, Copy, Default, Debug)]
-struct Rect {
-    x: f32,
-    y: f32,
-    width: f32,
-    height: f32,
+pub struct Rect {
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
 }
 
 #[derive(Clone, Copy, Default, Debug)]
-struct EdgeSizes {
-    left: f32,
-    right: f32,
-    top: f32,
-    bottom: f32,
+pub struct EdgeSizes {
+    pub left: f32,
+    pub right: f32,
+    pub top: f32,
+    pub bottom: f32,
 }
 pub enum BoxType<'a> {
     BlockNode(&'a StyledNode<'a>),
@@ -35,10 +35,10 @@ pub enum BoxType<'a> {
     AnonymousBlock,
 }
 
-struct LayoutBox<'a> {
-    dimensions: Dimensions,
-    box_type: BoxType<'a>,
-    children: Vec<LayoutBox<'a>>,
+pub struct LayoutBox<'a> {
+    pub dimensions: Dimensions,
+    pub box_type: BoxType<'a>,
+    pub children: Vec<LayoutBox<'a>>,
 }
 
 impl<'a> LayoutBox<'a> {
@@ -56,6 +56,19 @@ impl<'a> LayoutBox<'a> {
             AnonymousBlock => panic!("Anonymous block box has no style node"),
         }
     }
+}
+/// Transform a style tree into a layout tree.
+pub fn layout_tree<'a>(
+    node: &'a StyledNode<'a>,
+    mut containing_block: Dimensions,
+) -> LayoutBox<'a> {
+    // The layout algorithm expects the container height to start at 0.
+    // TODO: Save the initial containing block height, for calculating percent heights.
+    containing_block.content.height = 0.0;
+
+    let mut root_box = build_layout_tree(node);
+    root_box.layout(containing_block);
+    root_box
 }
 
 /// Build the tree of LayoutBoxes, but don't perform any layout calculations yet.
@@ -275,7 +288,7 @@ impl Dimensions {
     }
 
     // The area covered by the content area plus padding and borders.
-    fn border_box(self) -> Rect {
+    pub fn border_box(self) -> Rect {
         self.padding_box().expanded_by(self.border)
     }
     // The area covered by the content area plus padding, borders, and margin.
